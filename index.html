@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Consulta de Folios - Jalisco</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, -apple-system, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #f4f7fc;
+            color: #1e2a3e;
+            line-height: 1.5;
+        }
+
+        /* Header sin logo */
+        header {
+            background-color: transparent;
+            padding: 0;
+            margin: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Hero Image - full width sin marco (primera imagen) */
+        .hero-image {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-top: 0;
+            margin-bottom: 32px;
+            background-color: #f4f7fc;
+            line-height: 0;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        /* Buscador principal */
+        .search-container {
+            background-color: #ffffff;
+            border-radius: 28px;
+            padding: 28px 24px 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+            margin-bottom: 40px;
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .search-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #0b3b2f;
+            text-align: center;
+            letter-spacing: -0.3px;
+        }
+
+        .search-sub {
+            text-align: center;
+            color: #4a627a;
+            margin-bottom: 28px;
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
+
+        .search-form {
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1e3a5f;
+            font-size: 0.95rem;
+        }
+
+        .input-with-button {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input[type="text"] {
+            padding: 16px 18px;
+            border: 1.5px solid #e2edf2;
+            border-radius: 60px;
+            font-size: 1rem;
+            transition: all 0.2s;
+            background-color: #fefefe;
+            flex: 1;
+            font-weight: 500;
+            color: #0b2b26;
+        }
+
+        input[type="text"]:focus {
+            border-color: #2b7a4b;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(43, 122, 75, 0.2);
+            background-color: #ffffff;
+        }
+
+        input::placeholder {
+            color: #9bb7c9;
+            font-weight: 400;
+            font-size: 0.95rem;
+        }
+
+        .search-button {
+            background-color: #1f6e43;
+            color: white;
+            border: none;
+            padding: 0 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+            letter-spacing: 0.5px;
+        }
+
+        .search-button:hover {
+            background-color: #0f5537;
+            transform: translateY(-1px);
+            box-shadow: 0 8px 18px rgba(31, 110, 67, 0.2);
+        }
+
+        .search-button:active {
+            transform: translateY(1px);
+        }
+
+        .form-hint {
+            font-size: 0.75rem;
+            color: #6c8faa;
+            margin-top: 8px;
+            padding-left: 10px;
+        }
+
+        /* Resultados */
+        .results-container {
+            background-color: #ffffff;
+            border-radius: 28px;
+            padding: 28px 26px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.06);
+            display: none;
+            margin-bottom: 30px;
+            border: 1px solid #ebf2f5;
+        }
+
+        .results-title {
+            font-size: 1.65rem;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #1c4e3c;
+            border-left: 5px solid #1f6e43;
+            padding-left: 18px;
+            letter-spacing: -0.2px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 18px;
+            margin-bottom: 28px;
+        }
+
+        .result-item {
+            padding: 12px 8px 12px 0;
+            border-bottom: 1px solid #ecf3f8;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-label {
+            font-weight: 700;
+            color: #2c5a6e;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .result-value {
+            color: #0f2c33;
+            font-size: 1rem;
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        /* Sección de validación legal y botón regresar */
+        .validation-section {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 2px solid #e2efe6;
+            text-align: center;
+        }
+
+        .legal-message {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 1.1rem;
+            letter-spacing: 1px;
+            color: #1a5d3c;
+            background: #eafaf1;
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 50px;
+            margin-bottom: 24px;
+            font-family: inherit;
+        }
+
+        /* Botón regresar estilo verde gris con letras blancas */
+        .back-button {
+            background-color: #5a6e5c;
+            color: white;
+            border: none;
+            padding: 14px 32px;
+            border-radius: 60px;
+            font-size: 1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            text-decoration: none;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            letter-spacing: 0.8px;
+        }
+
+        .back-button:hover {
+            background-color: #3e5440;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 18px rgba(90, 110, 92, 0.3);
+        }
+
+        .back-button:active {
+            transform: translateY(1px);
+        }
+
+        /* IMAGEN FINAL - Full width sin marco, siempre visible */
+        .footer-image {
+            width: 100vw;
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+            margin-top: 20px;
+            margin-bottom: 0;
+            background-color: #f4f7fc;
+            line-height: 0;
+        }
+
+        .footer-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: cover;
+            border: none;
+            box-shadow: none;
+            border-radius: 0;
+        }
+
+        /* ========== BURBUJA FLOTANTE IZQUIERDA (estática, sin función) ========== */
+        .floating-bubble {
+            position: fixed;
+            left: 20px;
+            bottom: 120px;
+            width: auto;
+            max-width: 130px;
+            z-index: 1000;
+            pointer-events: none;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.12));
+            transition: all 0.2s ease;
+        }
+
+        .floating-bubble img {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 50%;
+            object-fit: cover;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+            border: 2px solid rgba(255,255,255,0.5);
+        }
+
+        /* Responsive: ajustar tamaño y posición en móviles */
+        @media (max-width: 680px) {
+            .floating-bubble {
+                left: 12px;
+                bottom: 90px;
+                max-width: 85px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .floating-bubble {
+                left: 8px;
+                bottom: 70px;
+                max-width: 70px;
+            }
+        }
+
+        /* Loading y errores */
+        .loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: #4f7d5c;
+            font-size: 1rem;
+            background: white;
+            border-radius: 40px;
+            margin-top: 10px;
+            display: none;
+        }
+
+        .spinner {
+            border: 4px solid #e2f0e6;
+            border-radius: 50%;
+            border-top: 4px solid #1f6e43;
+            width: 44px;
+            height: 44px;
+            animation: spin 0.9s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            background-color: #fff5f0;
+            color: #bc5a2c;
+            padding: 14px 20px;
+            border-radius: 60px;
+            margin-top: 20px;
+            border-left: 4px solid #e67e22;
+            font-weight: 500;
+            text-align: center;
+            display: none;
+            font-size: 0.9rem;
+        }
+
+        .validation-error {
+            color: #dc5f2e;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            margin-left: 12px;
+            display: none;
+            font-weight: 500;
+        }
+
+        /* Footer institucional pequeño */
+        .footer-credit {
+            text-align: center;
+            color: #7c9bb0;
+            font-size: 0.8rem;
+            padding: 20px 10px 25px;
+            border-top: 1px solid #dfecf0;
+            margin-top: 0;
+            background-color: #f4f7fc;
+        }
+
+        /* Responsive general */
+        @media (max-width: 680px) {
+            .container {
+                padding: 0 16px;
+            }
+
+            .hero-image {
+                margin-bottom: 24px;
+            }
+
+            .search-container {
+                padding: 22px 18px 26px;
+                border-radius: 24px;
+            }
+
+            .search-title {
+                font-size: 1.6rem;
+            }
+
+            .input-with-button {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .search-button {
+                padding: 14px 20px;
+                width: 100%;
+                font-size: 1rem;
+            }
+
+            input[type="text"] {
+                padding: 14px 18px;
+            }
+
+            .results-container {
+                padding: 22px 18px;
+                border-radius: 24px;
+            }
+
+            .results-title {
+                font-size: 1.4rem;
+                padding-left: 12px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .legal-message {
+                font-size: 0.9rem;
+                padding: 8px 18px;
+            }
+
+            .back-button {
+                padding: 12px 26px;
+                font-size: 0.95rem;
+                width: auto;
+                min-width: 180px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .search-title {
+                font-size: 1.45rem;
+            }
+            .legal-message {
+                font-size: 0.85rem;
+                letter-spacing: 0.5px;
+            }
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+    </style>
+</head>
+<body>
+    <header></header>
+
+    <main>
+        <!-- Imagen principal full width sin marco (primera) -->
+        <div class="hero-image">
+            <img src="https://i.postimg.cc/7PM6nNW4/IMG-4730.jpg" alt="Consulta de folios Jalisco" loading="eager">
+        </div>
+
+        <div class="container">
+            <!-- Buscador de folio: ahora solicita 9 dígitos -->
+            <div class="search-container">
+                <h2 class="search-title">Buscar folio</h2>
+                <p class="search-sub">Ingresa el número de folio (9 dígitos) para conocer el estado de tu trámite</p>
+                <form class="search-form" id="searchForm">
+                    <div class="form-group">
+                        <label for="folio">Número de folio (9 dígitos)</label>
+                        <div class="input-with-button">
+                            <input type="text" id="folio" name="folio" placeholder="Ejemplo: 123456789" maxlength="9" autocomplete="off">
+                            <button type="submit" class="search-button">CONSULTAR</button>
+                        </div>
+                        <div class="validation-error" id="folioError">
+                            El folio debe tener exactamente 9 dígitos numéricos.
+                        </div>
+                    </div>
+                </form>
+                <div class="error-message" id="errorMessage">
+                    ⚠️ Folio no encontrado. Verifica el número e intenta nuevamente.
+                </div>
+            </div>
+
+            <div class="loading" id="loadingMessage">
+                <div class="spinner"></div>
+                <p>Consultando base de datos...</p>
+            </div>
+
+            <div class="results-container" id="resultsContainer">
+                <h2 class="results-title">INFORMACIÓN DEL PERMISO</h2>
+                <div class="results-grid" id="resultsGrid">
+                    <!-- Datos dinámicos -->
+                </div>
+                <!-- Sección con mensaje legal y botón regresar -->
+                <div class="validation-section" id="validationSection">
+                    <div class="legal-message">DOCUMENTO DIGITAL VÁLIDO EN TODO MÉXICO</div>
+                    <div>
+                        <a href="#" id="backButton" class="back-button">Regresar</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- NUEVA IMAGEN FINAL: siempre visible, sin marco, horizontal hasta abarcar todo -->
+    <div class="footer-image">
+        <img src="https://i.postimg.cc/250p5Vcf/IMG-4731.jpg" alt="Imagen institucional Jalisco" loading="lazy">
+    </div>
+
+    <!-- BURBUJA FLOTANTE IZQUIERDA: estática, sin función, imagen redonda -->
+    <div class="floating-bubble">
+        <img src="https://i.postimg.cc/X75gLqCf/IMG-4732.jpg" alt="" aria-hidden="true">
+    </div>
+
+    <script>
+        // Base de datos actualizada con folios de 9 dígitos
+        const datosEjemplo = {
+            "389700001": {
+                "Propietario": "Juan Pérez González",
+                "Número de serie / VIN": "WOLTG52F125251301",
+                "Marca del vehículo": "Nissan",
+                "Modelo": "Versa",
+                "Año": "2022",
+                "Color": "Blanco",
+                "Número de permiso": "389700001",
+                "Vigencia del permiso": "31 de diciembre de 2026",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "15 de marzo de 2023",
+                "Tipo de permiso": "Particular",
+                "Placas": "ABC-123"
+            },
+            "123456789": {
+                "Propietario": "María García López",
+                "Número de serie / VIN": "ABC123456789",
+                "Marca del vehículo": "Toyota",
+                "Modelo": "Corolla",
+                "Año": "2021",
+                "Color": "Gris",
+                "Número de permiso": "123456789",
+                "Vigencia del permiso": "30 de junio de 2025",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "10 de enero de 2022",
+                "Tipo de permiso": "Público",
+                "Placas": "DEF-456"
+            },
+            "543219876": {
+                "Propietario": "Carlos Rodríguez Martínez",
+                "Número de serie / VIN": "XYZ987654321",
+                "Marca del vehículo": "Ford",
+                "Modelo": "F-150",
+                "Año": "2020",
+                "Color": "Negro",
+                "Número de permiso": "543219876",
+                "Vigencia del permiso": "15 de agosto de 2024",
+                "Estado del permiso": "Por vencer",
+                "Fecha de expedición": "20 de mayo de 2021",
+                "Tipo de permiso": "Comercial",
+                "Placas": "GHI-789"
+            },
+            "987654321": {
+                "Propietario": "Ana Sánchez Ruiz",
+                "Número de serie / VIN": "MNO456123789",
+                "Marca del vehículo": "Volkswagen",
+                "Modelo": "Jetta",
+                "Año": "2023",
+                "Color": "Azul",
+                "Número de permiso": "987654321",
+                "Vigencia del permiso": "31 de diciembre de 2027",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "5 de febrero de 2023",
+                "Tipo de permiso": "Particular",
+                "Placas": "JKL-012"
+            },
+            "001234567": {
+                "Propietario": "Laura Fernanda Torres",
+                "Número de serie / VIN": "HONDA123987XYZ",
+                "Marca del vehículo": "Honda",
+                "Modelo": "CR-V",
+                "Año": "2024",
+                "Color": "Rojo",
+                "Número de permiso": "001234567",
+                "Vigencia del permiso": "15 de noviembre de 2028",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "2 de enero de 2024",
+                "Tipo de permiso": "Particular",
+                "Placas": "MNO-345"
+            },
+            "011212345": {
+                "Propietario": "Roberto Méndez Silva",
+                "Número de serie / VIN": "CHEVY789456XYZ",
+                "Marca del vehículo": "Chevrolet",
+                "Modelo": "Spark",
+                "Año": "2024",
+                "Color": "Rojo",
+                "Número de permiso": "011212345",
+                "Vigencia del permiso": "28 de Marzo de 2026",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "28 de Abril de 2026",
+                "Tipo de permiso": "Para circular sin placas",
+                "Placas": "S/P"
+            },
+            "555123987": {
+                "Propietario": "Patricia Jiménez Ríos",
+                "Número de serie / VIN": "KIA123789ABC",
+                "Marca del vehículo": "Kia",
+                "Modelo": "Sportage",
+                "Año": "2023",
+                "Color": "Plateado",
+                "Número de permiso": "555123987",
+                "Vigencia del permiso": "20 de diciembre de 2027",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "10 de marzo de 2023",
+                "Tipo de permiso": "Particular",
+                "Placas": "XYZ-890"
+            },
+            "777444111": {
+                "Propietario": "Miguel Ángel Fuentes",
+                "Número de serie / VIN": "MAZDA456789XYZ",
+                "Marca del vehículo": "Mazda",
+                "Modelo": "CX-5",
+                "Año": "2022",
+                "Color": "Azul marino",
+                "Número de permiso": "777444111",
+                "Vigencia del permiso": "15 de septiembre de 2026",
+                "Estado del permiso": "Vigente",
+                "Fecha de expedición": "22 de agosto de 2022",
+                "Tipo de permiso": "Particular",
+                "Placas": "LMN-234"
+            }
+        };
+
+        // Validar folio: exactamente 9 dígitos numéricos
+        function validarFolio(folio) {
+            return /^\d{9}$/.test(folio);
+        }
+
+        // Elementos DOM
+        const folioInput = document.getElementById('folio');
+        const searchForm = document.getElementById('searchForm');
+        const folioErrorDiv = document.getElementById('folioError');
+        const errorMessageDiv = document.getElementById('errorMessage');
+        const loadingDiv = document.getElementById('loadingMessage');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const backButton = document.getElementById('backButton');
+
+        // Configurar el botón "Regresar" con URL
+        const REDIRECT_URL = "https://www.jalisco.gob.mx";
+        
+        backButton.addEventListener('click', function(e) {
+            e.preventDefault();
+            window.location.href = REDIRECT_URL;
+        });
+
+        // Restringir entrada: solo números, máximo 9 dígitos
+        folioInput.addEventListener('input', function(e) {
+            let rawValue = this.value.replace(/\D/g, '');
+            if (rawValue.length > 9) {
+                rawValue = rawValue.slice(0, 9);
+            }
+            this.value = rawValue;
+            folioErrorDiv.style.display = 'none';
+            errorMessageDiv.style.display = 'none';
+        });
+
+        // Manejar submit
+        searchForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+
+            const folio = folioInput.value.trim();
+
+            if (!validarFolio(folio)) {
+                folioErrorDiv.style.display = 'block';
+                folioInput.focus();
+                resultsContainer.style.display = 'none';
+                errorMessageDiv.style.display = 'none';
+                return;
+            }
+
+            folioErrorDiv.style.display = 'none';
+            errorMessageDiv.style.display = 'none';
+            resultsContainer.style.display = 'none';
+            loadingDiv.style.display = 'block';
+
+            setTimeout(() => {
+                loadingDiv.style.display = 'none';
+                const datos = datosEjemplo[folio];
+
+                if (datos) {
+                    mostrarResultados(datos);
+                } else {
+                    errorMessageDiv.style.display = 'block';
+                    resultsContainer.style.display = 'none';
+                    errorMessageDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }, 850);
+        });
+
+        // Función para mostrar resultados ordenados
+        function mostrarResultados(datos) {
+            resultsGrid.innerHTML = '';
+            const ordenCampos = [
+                "Propietario", "Número de permiso", "Estado del permiso", 
+                "Marca del vehículo", "Modelo", "Año", "Color",
+                "Número de serie / VIN", "Placas", "Tipo de permiso",
+                "Vigencia del permiso", "Fecha de expedición"
+            ];
+            
+            const datosMap = new Map(Object.entries(datos));
+            
+            for (let campo of ordenCampos) {
+                if (datosMap.has(campo)) {
+                    const valor = datosMap.get(campo);
+                    if (valor !== undefined && valor !== null && valor !== "") {
+                        const item = document.createElement('div');
+                        item.className = 'result-item';
+                        item.innerHTML = `
+                            <div class="result-label">${campo}</div>
+                            <div class="result-value">${valor}</div>
+                        `;
+                        resultsGrid.appendChild(item);
+                        datosMap.delete(campo);
+                    }
+                }
+            }
+            
+            for (let [clave, valor] of datosMap.entries()) {
+                if (valor && valor.toString().trim() !== "") {
+                    const item = document.createElement('div');
+                    item.className = 'result-item';
+                    item.innerHTML = `
+                        <div class="result-label">${clave}</div>
+                        <div class="result-value">${valor}</div>
+                    `;
+                    resultsGrid.appendChild(item);
+                }
+            }
+            
+            resultsContainer.style.display = 'block';
+            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        // Inicializar sin valores precargados
+        window.addEventListener('DOMContentLoaded', function() {
+            folioInput.value = '';
+            folioInput.placeholder = "Ejemplo: 123456789";
+            folioInput.focus();
+            resultsContainer.style.display = 'none';
+            errorMessageDiv.style.display = 'none';
+            folioErrorDiv.style.display = 'none';
+            loadingDiv.style.display = 'none';
+        });
+
+        // Validar pegado de texto no numérico
+        folioInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            const pastedText = (e.clipboardData || window.clipboardData).getData('text');
+            const onlyNumbers = pastedText.replace(/\D/g, '');
+            const truncated = onlyNumbers.slice(0, 9);
+            this.value = truncated;
+            const inputEvent = new Event('input', { bubbles: true });
+            this.dispatchEvent(inputEvent);
+        });
+
+        folioInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const submitEvent = new Event('submit', { cancelable: true, bubbles: true });
+                searchForm.dispatchEvent(submitEvent);
+            }
+        });
+
+        folioInput.addEventListener('focus', function() {
+            if (errorMessageDiv.style.display === 'block') {
+                errorMessageDiv.style.display = 'none';
+            }
+            if (folioErrorDiv.style.display === 'block') {
+                folioErrorDiv.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
